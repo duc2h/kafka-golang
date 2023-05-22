@@ -8,5 +8,7 @@ Something I can do:
 * Some test:
     * schema registry with protobuf: In order to see how schema-registry helpful . 
     * Rebalancing in consumer group when a consumer join/leave occur.
+    * Offset, replay message when kafka down.
+    * Message key, order message follow partition.
     * CDC with postgresql 
     * ...
