@@ -5,6 +5,9 @@ import (
 
 	"github.com/edarha/kafka-golang/internals/configs"
 	"github.com/edarha/kafka-golang/internals/must"
+	"github.com/edarha/kafka-golang/internals/repositories"
+	"github.com/edarha/kafka-golang/internals/services"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -19,9 +22,19 @@ func main() {
 	db := must.ConnectPostgresql(&cfg)
 
 	// migrate database
-	err := must.MigrateDB(db)
-	if err != nil {
+	if err := must.MigrateDB(db); err != nil {
 		log.Fatal("something wrong while migrating database. err: %w", err)
 	}
 
+	// init repo
+	studentRepo := repositories.NewStudentRepo(db)
+
+	// init service
+	studentSvc := services.NewStudent(studentRepo)
+
+	// setup server
+	r := gin.Default()
+	r.POST("/student", studentSvc.Post)
+
+	r.Run(":8080")
 }
