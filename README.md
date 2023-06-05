@@ -14,3 +14,7 @@ Something I can do:
     * Message key, order message follow partition.
     * CDC with postgresql 
     * ...
+
+
+post student -> publish message -> consume a message -> fetch user_id from user table -> Yes -> consume success remove message
+                                                                   -> No -> publish the message to dead letter, read the message proto,  

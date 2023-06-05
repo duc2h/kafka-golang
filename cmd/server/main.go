@@ -3,11 +3,16 @@ package main
 import (
 	"log"
 
+	"github.com/Shopify/sarama"
 	"github.com/edarha/kafka-golang/internals/configs"
 	"github.com/edarha/kafka-golang/internals/must"
 	"github.com/edarha/kafka-golang/internals/repositories"
 	"github.com/edarha/kafka-golang/internals/services"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	kafkaBrokers = []string{"localhost:9092"}
 )
 
 func main() {
@@ -26,15 +31,28 @@ func main() {
 		log.Fatal("something wrong while migrating database. err: %w", err)
 	}
 
+	// init kafka producer
+	producer, err := SetupProducer()
+	if err != nil {
+		log.Fatal("something wrong while setup producer. err: %w", err)
+
+	}
+
 	// init repo
 	studentRepo := repositories.NewStudentRepo(db)
 
 	// init service
-	studentSvc := services.NewStudent(studentRepo)
+	studentSvc := services.NewStudent(studentRepo, producer)
 
 	// setup server
 	r := gin.Default()
 	r.POST("/student", studentSvc.Post)
 
 	r.Run(":8080")
+}
+
+// setupProducer will create a AsyncProducer and returns it
+func SetupProducer() (sarama.AsyncProducer, error) {
+	config := sarama.NewConfig()
+	return sarama.NewAsyncProducer(kafkaBrokers, config)
 }
