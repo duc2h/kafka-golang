@@ -2,31 +2,31 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/Shopify/sarama"
 	"github.com/edarha/kafka-golang/internals/models"
 	"github.com/edarha/kafka-golang/internals/repositories"
+	kafka_pb "github.com/edarha/kafka-golang/pb/kafka"
+	"google.golang.org/protobuf/proto"
+
+	"github.com/Shopify/sarama"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 var (
-	kafkaBrokers = []string{"localhost:9092"}
-	KafkaTopic   = "student_create"
-	enqueued     int
+	KafkaTopic = "student_create"
 )
 
 type student struct {
 	studentRepo repositories.Student
-	producer    sarama.AsyncProducer
+	producer    sarama.SyncProducer
 }
 
 func NewStudent(studentRepo repositories.Student,
-	producer sarama.AsyncProducer) *student {
+	producer sarama.SyncProducer) *student {
 	return &student{
 		studentRepo: studentRepo,
 		producer:    producer,
@@ -54,23 +54,35 @@ func (s *student) Post(c *gin.Context) {
 			return
 		}
 
+		produceMessages(s.producer, entity)
+
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	}
 }
 
 // produceMessages will send 'testing 123' to KafkaTopic each second, until receive a os signal to stop e.g. control + c
 // by the user in terminal
-func produceMessages(producer sarama.AsyncProducer, signals chan os.Signal) {
-	for {
-		time.Sleep(time.Second)
-		message := &sarama.ProducerMessage{Topic: KafkaTopic, Value: sarama.StringEncoder("testing 123")}
-		select {
-		case producer.Input() <- message:
-			enqueued++
-			log.Println("New Message produced")
-		case <-signals:
-			producer.AsyncClose() // Trigger a shutdown of the producer.
-			return
-		}
+func produceMessages(producer sarama.SyncProducer, student models.Student) {
+
+	s := kafka_pb.Student{
+		UserId: student.UserId,
+		Grade:  int32(student.Grade),
 	}
+
+	m, err := proto.Marshal(&s)
+	if err != nil {
+		log.Fatalln("marshal error: ", err.Error())
+	}
+
+	message := &sarama.ProducerMessage{Topic: KafkaTopic, Value: sarama.ByteEncoder(m)}
+
+	p, o, err := producer.SendMessage(message)
+
+	if err != nil {
+		fmt.Println("Err publish: ", err.Error())
+	}
+
+	fmt.Println("Partition: ", p)
+	fmt.Println("Offset: ", o)
+
 }

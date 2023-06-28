@@ -1,4 +1,4 @@
-package subscriber
+package main
 
 import (
 	"context"
@@ -9,7 +9,10 @@ import (
 	"sync"
 	"syscall"
 
+	kafka_pb "github.com/edarha/kafka-golang/pb/kafka"
+
 	"github.com/Shopify/sarama"
+	"google.golang.org/protobuf/proto"
 )
 
 // Sarama configuration options
@@ -25,6 +28,7 @@ func main() {
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 	ctx, cancel := context.WithCancel(context.Background())
 	client, err := sarama.NewConsumerGroup(strings.Split(brokers, ","), group, config)
+
 	if err != nil {
 		log.Fatal("Init consumer failed %w", err)
 	}
@@ -104,7 +108,14 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 	for {
 		select {
 		case message := <-claim.Messages():
-			log.Printf("Message claimed: value = %s, timestamp = %v, topic = %s", string(message.Value), message.Timestamp, message.Topic)
+
+			student := kafka_pb.Student{}
+			err := proto.Unmarshal(message.Value, &student)
+			if err != nil {
+				log.Println("unmarshal error: ", err.Error())
+				continue
+			}
+			log.Printf("Message claimed: user_id = %s, grade = %d, timestamp = %v, topic = %s", student.UserId, student.Grade, message.Timestamp, message.Topic)
 			session.MarkMessage(message, "")
 
 		// Should return when `session.Context()` is done.

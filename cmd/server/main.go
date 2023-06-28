@@ -52,7 +52,10 @@ func main() {
 }
 
 // setupProducer will create a AsyncProducer and returns it
-func SetupProducer() (sarama.AsyncProducer, error) {
+func SetupProducer() (sarama.SyncProducer, error) {
 	config := sarama.NewConfig()
-	return sarama.NewAsyncProducer(kafkaBrokers, config)
+	config.Producer.Retry.Max = 5
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Return.Successes = true
+	return sarama.NewSyncProducer(kafkaBrokers, config)
 }
