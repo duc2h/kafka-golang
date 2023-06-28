@@ -16,5 +16,13 @@ Something I can do:
     * ...
 
 
+
 post student -> publish message -> consume a message -> fetch user_id from user table -> Yes -> consume success remove message
                                                                    -> No -> publish the message to dead letter, read the message proto,  
+
+
+* How to add partitions on the runtime.
+    1. Exec to kafka container: `docker exec -it [container-id] sh`
+    2. Get help: `kafka-topics --help`
+    3. Get describe of a topic: ` kafka-topics --describe --bootstrap-server [broker-server](eg: broker:9092) --topic [topic-name]`. Question: How about my kafka has 3 brokers?
+    4. Add partition: `kafka-topics --bootstrap-server broker:9092 --topic [topic-name] --alter --partitions [number-of-partitions]`.
