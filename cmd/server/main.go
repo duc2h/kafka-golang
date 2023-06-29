@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/Shopify/sarama"
 	"github.com/edarha/kafka-golang/internals/configs"
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	kafkaBrokers = []string{"localhost:9092"}
+	brokers = "localhost:29092,localhost:29093,localhost:29094"
 )
 
 func main() {
@@ -57,5 +58,5 @@ func SetupProducer() (sarama.SyncProducer, error) {
 	config.Producer.Retry.Max = 5
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Return.Successes = true
-	return sarama.NewSyncProducer(kafkaBrokers, config)
+	return sarama.NewSyncProducer(strings.Split(brokers, ","), config)
 }

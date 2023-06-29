@@ -17,7 +17,7 @@ import (
 
 // Sarama configuration options
 var (
-	brokers = "localhost:9092"
+	brokers = "localhost:29092,localhost:29093,localhost:29094"
 	group   = "group_consumer_student_create"
 	topics  = "student_create,student_update"
 )

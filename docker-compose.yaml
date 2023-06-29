@@ -25,53 +25,102 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      
-  broker:
+    networks: 
+      - rmoff_kafka
+
+  broker1:
     image: confluentinc/cp-kafka:7.2.2
-    hostname: broker
+    hostname: broker1
     depends_on:
       - zookeeper
     ports:
-      - "29092:29092"
       - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3 # replicate the topic to other brokers.
+      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
+    networks: 
+      - rmoff_kafka
+
+
+  broker2:
+    image: confluentinc/cp-kafka:7.2.2
+    hostname: broker2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+      - "29093:29093"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_JMX_PORT: 9101
-      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9093,PLAINTEXT_HOST://localhost:29093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
+    networks: 
+      - rmoff_kafka
+      
 
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.2.2
-    hostname: schema-registry
+
+  broker3:
+    image: confluentinc/cp-kafka:7.2.2
+    hostname: broker3
     depends_on:
-      - broker
+      - zookeeper
     ports:
-      - "8081:8081"
+      - "9094:9094"
+      - "29094:29094"
     environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker3:9094,PLAINTEXT_HOST://localhost:29094
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3 
+      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
+    networks: 
+      - rmoff_kafka
+
+
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:7.2.2
+  #   hostname: schema-registry
+  #   depends_on:
+  #     - broker
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
+  #     SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     depends_on:
-      - broker
+      - broker1
+      - broker2
+      - broker3
     ports:
       - "9081:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'broker:29092'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker1:9092,broker2:9093,broker3:9094
+    networks: 
+      - rmoff_kafka
 
 networks:
   postgres:
     driver: bridge
+  rmoff_kafka:
+    name: rmoff_kafka
 
 volumes:
     postgres:
