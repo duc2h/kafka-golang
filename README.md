@@ -3,6 +3,12 @@ Something I can do:
 
 
 * :x: Create a producer with wildcard topic.
+    * The logic: 
+        1. We have 2 topics: student_create, student_update.
+        2. We have 3 consumers: 
+            * consumer consumes `student_create` topic.
+            * consumer consumes `student_update` topic.
+            * consumer consumes `student_*` topic.
 * :heavy_check_mark: Create a group consumer with multiple topics. (2 consumers)
 * :x: Deploy them like a cluster by k8s (PVC).
 * Some test:
