@@ -2,17 +2,17 @@ Play with kafka and golang
 Something I can do:
 
 
-* [] Create a producer with wildcard topic.
-* [x] Create a group consumer with multiple topics. (2 consumers)
-* [] Deploy them like a cluster by k8s (PVC).
+* :x: Create a producer with wildcard topic.
+* :heavy_check_mark: Create a group consumer with multiple topics. (2 consumers)
+* :x: Deploy them like a cluster by k8s (PVC).
 * Some test:
-    * [] kafka TTL
-    * [] schema registry with protobuf: In order to see how schema-registry helpful .
-    * [] Stress test with k6.io
-    * [] Rebalancing in consumer group when a consumer join/leave occur.
-    * [] Offset, replay message when kafka down.
-    * [] Message key, order message follow partition.
-    * [] CDC with postgresql 
+    * :x: kafka TTL
+    * :x: schema registry with protobuf: In order to see how schema-registry helpful .
+    * :x: Stress test with k6.io
+    * :x: Rebalancing in consumer group when a consumer join/leave occur.
+    * :x: Offset, replay message when kafka down.
+    * :x: Message key, order message follow partition.
+    * :x: CDC with postgresql 
     * ...
 
 
