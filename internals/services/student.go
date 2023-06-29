@@ -17,7 +17,8 @@ import (
 )
 
 var (
-	KafkaTopic = "student_create"
+	student_create = "student_create"
+	student_update = "student_update"
 )
 
 type student struct {
@@ -54,15 +55,13 @@ func (s *student) Post(c *gin.Context) {
 			return
 		}
 
-		produceMessages(s.producer, entity)
+		produceMessagesCreate(s.producer, entity)
 
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	}
 }
 
-// produceMessages will send 'testing 123' to KafkaTopic each second, until receive a os signal to stop e.g. control + c
-// by the user in terminal
-func produceMessages(producer sarama.SyncProducer, student models.Student) {
+func produceMessagesCreate(producer sarama.SyncProducer, student models.Student) {
 
 	s := kafka_pb.Student{
 		UserId: student.UserId,
@@ -74,8 +73,38 @@ func produceMessages(producer sarama.SyncProducer, student models.Student) {
 		log.Fatalln("marshal error: ", err.Error())
 	}
 
-	message := &sarama.ProducerMessage{Topic: KafkaTopic, Value: sarama.ByteEncoder(m)}
+	message := &sarama.ProducerMessage{
+		Key:   sarama.StringEncoder(s.Grade),
+		Topic: student_create,
+		Value: sarama.ByteEncoder(m),
+	}
+	p, o, err := producer.SendMessage(message)
 
+	if err != nil {
+		fmt.Println("Err publish: ", err.Error())
+	}
+
+	a, _ := sarama.StringEncoder(s.Grade).Encode()
+
+	fmt.Println("Partition: ", p)
+	fmt.Println("Offset: ", o)
+	fmt.Println("Key: ", a)
+
+}
+
+func produceMessagesUpdate(producer sarama.SyncProducer, student models.Student) {
+
+	s := kafka_pb.Student{
+		UserId: student.UserId,
+		Grade:  int32(student.Grade),
+	}
+
+	m, err := proto.Marshal(&s)
+	if err != nil {
+		log.Fatalln("marshal error: ", err.Error())
+	}
+
+	message := &sarama.ProducerMessage{Topic: student_update, Value: sarama.ByteEncoder(m)}
 	p, o, err := producer.SendMessage(message)
 
 	if err != nil {

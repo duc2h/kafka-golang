@@ -15,9 +15,46 @@ Something I can do:
     * :x: kafka TTL
     * :x: schema registry with protobuf: In order to see how schema-registry helpful .
     * :x: Stress test with k6.io
-    * :x: Rebalancing in consumer group when a consumer join/leave occur.
+    * :heavy_check_mark: Rebalancing in consumer group when a consumer join/leave occur.
+        1. 2 consumers in a group `group_consumer_student_create`.
+        ```
+            sh-4.4$ kafka-consumer-groups --bootstrap-server broker:9092 --group group_consumer_student_create --describe
+
+            GROUP                         TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                 HOST            CLIENT-ID
+            group_consumer_student_create student_update  0          2               2               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  2          7               7               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  3          8               8               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  0          17              17              0               sarama-3ede9a42-8938-48ef-80e4-f4882d7dcd60 /172.18.0.1     sarama
+            group_consumer_student_create student_create  1          25              25              0               sarama-3ede9a42-8938-48ef-80e4-f4882d7dcd60 /172.18.0.1     sarama
+        ```
+
+        2. delete a consumer in group `group_consumer_student_create`.
+        ```
+            sh-4.4$ kafka-consumer-groups --bootstrap-server broker:9092 --group group_consumer_student_create --describe
+
+            GROUP                         TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                 HOST            CLIENT-ID
+            group_consumer_student_create student_create  3          8               8               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_update  0          2               2               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  0          17              17              0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  2          7               7               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  1          25              25              0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+        ```
+
+        3. add new a consumer in group `group_consumer_student_create`.
+        ```
+            sh-4.4$ kafka-consumer-groups --bootstrap-server broker:9092 --group group_consumer_student_create --describe
+
+            GROUP                         TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                 HOST            CLIENT-ID
+            group_consumer_student_create student_create  0          17              17              0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_update  0          2               2               0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  1          25              25              0               sarama-ac9713b9-e465-48c4-9732-0400b9d45aa5 /172.18.0.1     sarama
+            group_consumer_student_create student_create  2          7               7               0               sarama-c6675285-33d5-4605-b359-6481aa05c0ef /172.18.0.1     sarama
+            group_consumer_student_create student_create  3          8               8               0               sarama-c6675285-33d5-4605-b359-6481aa05c0ef /172.18.0.1     sarama
+        ```
+
     * :x: Offset, replay message when kafka down.
     * :x: Message key, order message follow partition.
+        * Need to make a scenario for it.
     * :x: CDC with postgresql 
     * ...
 
