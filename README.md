@@ -49,7 +49,7 @@ Something I can do:
         Topic: student_create	Partition: 3	Leader: 1	Replicas: 1,2,0	Isr: 1,2,0
     ```
 
-- [Rebalancing in consumer group when a consumer join/leave occur](#rebalacing-consumer-group-when-a-consumer-join-leave).
+# [Rebalancing in consumer group when a consumer join/leave occur](#rebalacing-consumer-group-when-a-consumer-join-leave).
     * We create 4 partitions in `student_create` topic and 2 consumers in `group_consumer_student_create` consumer-group 
     1. 2 consumers in a group `group_consumer_student_create`.
     ```
