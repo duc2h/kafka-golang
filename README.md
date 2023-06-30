@@ -18,7 +18,7 @@ Something I can do:
     * :x: kafka TTL
     * :x: schema registry with protobuf: In order to see how schema-registry helpful .
     * :x: Stress test with k6.io
-    * :heavy_check_mark: [Rebalancing in consumer group when a consumer join/leave happen](#Rebalancing-in-consumer-group-when-a-consumer-join/leave-happen).
+    * :heavy_check_mark: [Rebalancing in consumer group when a consumer join/leave happen](#rebalancing-in-consumer-group-when-a-consumer-join/leave-happen).
 
     * :x: Offset, replay message when kafka down.
     * :x: Message key, order message follow partition.
@@ -34,7 +34,7 @@ Something I can do:
 
 
 ### Rebalancing in consumer group when a consumer join/leave happen
-    * We create 4 partitions in `student_create` topic and 2 consumers in `group_consumer_student_create` consumer-group. [In order to add partition in runtime(#how-to-add-partitions-on-the-runtime)
+    * We create 4 partitions in `student_create` topic and 2 consumers in `group_consumer_student_create` consumer-group. [In order to add partition in runtime](#how-to-add-partitions-on-the-runtime)
     1. 2 consumers in a group `group_consumer_student_create`.
     ```
         sh-4.4$ kafka-consumer-groups --bootstrap-server broker:9092 --group group_consumer_student_create --describe
