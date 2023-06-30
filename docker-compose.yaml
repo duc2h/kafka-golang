@@ -25,8 +25,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    networks: 
-      - rmoff_kafka
+
 
   broker1:
     image: confluentinc/cp-kafka:7.2.2
@@ -43,9 +42,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3 # replicate the topic to other brokers.
-      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
-    networks: 
-      - rmoff_kafka
 
 
   broker2:
@@ -63,10 +59,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9093,PLAINTEXT_HOST://localhost:29093
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
-    networks: 
-      - rmoff_kafka
-      
 
 
   broker3:
@@ -84,9 +76,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker3:9094,PLAINTEXT_HOST://localhost:29094
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3 
-      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://broker1:9092,PLAINTEXT://broker2:9093,PLAINTEXT://broker3:9094
-    networks: 
-      - rmoff_kafka
 
 
   # schema-registry:
@@ -113,14 +102,12 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker1:9092,broker2:9093,broker3:9094
-    networks: 
-      - rmoff_kafka
+
 
 networks:
   postgres:
     driver: bridge
-  rmoff_kafka:
-    name: rmoff_kafka
+
 
 volumes:
     postgres:
