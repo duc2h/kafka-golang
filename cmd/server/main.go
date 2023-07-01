@@ -48,6 +48,7 @@ func main() {
 	// setup server
 	r := gin.Default()
 	r.POST("/student", studentSvc.Post)
+	r.PUT("/student/:id", studentSvc.Put)
 
 	r.Run(":8080")
 }
