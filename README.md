@@ -16,15 +16,16 @@ Something I can do:
 
 * Some test:
     * :x: kafka TTL
-    * :x: schema registry with protobuf: In order to see how schema-registry helpful .
+    * :x: schema registry with protobuf: In order to see how schema-registry helpful.
     * :x: Stress test with k6.io
     * :heavy_check_mark: [Rebalancing in consumer group when a consumer join/leave happen](#rebalancing-in-consumer-group-when-a-consumer-joinleave-happen).
-        *  [In order to add partition in runtime](#how-to-add-partitions-on-the-runtime)
+        *  [How to add partitions on the runtime](#how-to-add-partitions-on-the-runtime)
     * :x: Offset, replay message when kafka down.
     * :x: Message key, order message follow partition.
         * Need to make a scenario for it.
     * :x: CDC with postgresql
     * :x: Implement out-box pattern.
+    * :x: Implement saga pattern.
     * ...
 
 

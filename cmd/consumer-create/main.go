@@ -18,8 +18,8 @@ import (
 // Sarama configuration options
 var (
 	brokers = "localhost:29092,localhost:29093,localhost:29094"
-	group   = "group_consumer_student_create"
-	topics  = "student_create,student_update"
+	group   = "group_consumer_student"
+	topics  = "student_create"
 )
 
 func main() {
@@ -115,6 +115,7 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 				log.Println("unmarshal error: ", err.Error())
 				continue
 			}
+
 			log.Printf("Message claimed: user_id = %s, grade = %d, timestamp = %v, topic = %s, partition = %d, key = %s", student.UserId, student.Grade, message.Timestamp, message.Topic, message.Partition, message.Key)
 			session.MarkMessage(message, "")
 

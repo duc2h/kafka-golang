@@ -61,6 +61,32 @@ func (s *student) Post(c *gin.Context) {
 	}
 }
 
+func (s *student) Put(c *gin.Context) {
+	var student struct {
+		UserId string `json:"user_id" biding:"required"`
+		Grade  int16  `json:"grade" biding:"required"`
+	}
+
+	// publish list student to kafka
+
+	if c.Bind(&student) == nil {
+		entity := models.Student{
+			UserId: student.UserId,
+			Grade:  student.Grade,
+		}
+
+		err := s.studentRepo.Update(context.Background(), c.Param("id"), &entity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		produceMessagesUpdate(s.producer, entity)
+
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	}
+}
+
 func produceMessagesCreate(producer sarama.SyncProducer, student models.Student) {
 
 	s := kafka_pb.Student{
