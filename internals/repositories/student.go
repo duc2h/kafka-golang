@@ -29,7 +29,7 @@ func (r *studentRepo) Create(ctx context.Context, entity *models.Student) error 
 func (r *studentRepo) Update(ctx context.Context, id string, entity *models.Student) error {
 	// be careful with empty value
 	// fields := map[string]interface{}{
-	// 	`user_id`: entity.UserId,
+	// 	`name`: entity.Name,
 	// 	`grade`:   entity.Grade,
 	// }
 

@@ -41,14 +41,21 @@ func main() {
 
 	// init repo
 	studentRepo := repositories.NewStudentRepo(db)
+	classStudentRepo := repositories.NewClassStudentRepo(db)
 
 	// init service
 	studentSvc := services.NewStudent(studentRepo, producer)
+	classStudentSvc := services.NewClassStudent(classStudentRepo, producer)
 
 	// setup server
 	r := gin.Default()
+
+	// student
 	r.POST("/student", studentSvc.Post)
 	r.PUT("/student/:id", studentSvc.Put)
+
+	// class_student
+	r.POST("/class-student/register", classStudentSvc.Register)
 
 	r.Run(":8080")
 }

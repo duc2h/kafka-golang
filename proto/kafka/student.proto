@@ -5,6 +5,6 @@ package kafka.v1;
 option go_package = "/kafka;pb";
 
 message Student {
-    string user_id = 1;
+    string name = 1;
     int32 grade = 2;
 }

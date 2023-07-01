@@ -12,7 +12,7 @@ Something I can do:
 * :heavy_check_mark: Create a group consumer with multiple topics. (3 consumers)
 * :x: Deploy them like a cluster by k8s (PVC).
 * :heavy_check_mark: Deploy kafka cluster (3 nodes)
-    * Be careful with `host:port` in the cluster, read this [instruction](https://www.confluent.io/en-gb/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/#adding-new-listener)
+    * Be careful with `host:port` in kafka cluster, read this [instruction](https://www.confluent.io/en-gb/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/#adding-new-listener)
 
 * Some test:
     * :x: kafka TTL
@@ -21,8 +21,8 @@ Something I can do:
     * :heavy_check_mark: [Rebalancing in consumer group when a consumer join/leave happen](#rebalancing-in-consumer-group-when-a-consumer-joinleave-happen).
         *  [How to add partitions on the runtime](#how-to-add-partitions-on-the-runtime)
     * :x: Offset, replay message when kafka down.
-    * :x: Message key, order message follow partition.
-        * Need to make a scenario for it.
+    * :x: Order message.
+        * [The scenario](#order-message-scenario).
     * :x: CDC with postgresql
     * :x: Implement out-box pattern.
     * :x: Implement saga pattern.
@@ -86,3 +86,10 @@ Something I can do:
         Topic: student_create	Partition: 2	Leader: 0	Replicas: 0,2,1	Isr: 0,2,1
         Topic: student_create	Partition: 3	Leader: 1	Replicas: 1,2,0	Isr: 1,2,0
     ```
+
+### Order message scenario
+    * A class has 10 seats maximum, so students need to register for their favorite class asap. 
+    * In peak time, many students register at the same time, so we need to order the register. If the register exceeds 10 -> we will reject all the rest.
+    * EG: The total of register in class Mathematics is 8.
+        * Student A, B, C send register to our application.
+        * The order of register is C, A, B. -> we will send them to a partition in kafka -> B will be rejected due to the total register exceeding 10.

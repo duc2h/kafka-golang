@@ -18,8 +18,8 @@ import (
 // Sarama configuration options
 var (
 	brokers = "localhost:29092,localhost:29093,localhost:29094"
-	group   = "group_consumer_student"
-	topics  = "student_update"
+	group   = "group_consumer_class_student"
+	topics  = "class_student_register"
 )
 
 func main() {
@@ -109,13 +109,16 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 		select {
 		case message := <-claim.Messages():
 
-			student := kafka_pb.Student{}
-			err := proto.Unmarshal(message.Value, &student)
+			classStudent := kafka_pb.ClassStudent{}
+			err := proto.Unmarshal(message.Value, &classStudent)
 			if err != nil {
 				log.Println("unmarshal error: ", err.Error())
 				continue
 			}
-			log.Printf("Message claimed: user_id = %s, grade = %d, timestamp = %v, topic = %s, partition = %d, key = %s", student.Name, student.Grade, message.Timestamp, message.Topic, message.Partition, message.Key)
+
+			// do logic here.
+
+			log.Printf("Message claimed: class_id = %s, student_id = %s, timestamp = %v, topic = %s, partition = %d, key = %s", classStudent.ClassId, classStudent.StudentId, message.Timestamp, message.Topic, message.Partition, message.Key)
 			session.MarkMessage(message, "")
 
 		// Should return when `session.Context()` is done.

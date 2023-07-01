@@ -36,17 +36,15 @@ func NewStudent(studentRepo repositories.Student,
 
 func (s *student) Post(c *gin.Context) {
 	var student struct {
-		UserId string `json:"user_id" biding:"required"`
-		Grade  int16  `json:"grade" biding:"required"`
+		Name  string `json:"name" biding:"required"`
+		Grade int16  `json:"grade" biding:"required"`
 	}
-
-	// publish list student to kafka
 
 	if c.Bind(&student) == nil {
 		entity := models.Student{
-			ID:     uuid.NewString(),
-			UserId: student.UserId,
-			Grade:  student.Grade,
+			ID:    uuid.NewString(),
+			Name:  student.Name,
+			Grade: student.Grade,
 		}
 
 		err := s.studentRepo.Create(context.Background(), &entity)
@@ -57,22 +55,20 @@ func (s *student) Post(c *gin.Context) {
 
 		produceMessagesCreate(s.producer, entity)
 
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	}
 }
 
 func (s *student) Put(c *gin.Context) {
 	var student struct {
-		UserId string `json:"user_id" biding:"required"`
-		Grade  int16  `json:"grade" biding:"required"`
+		Name  string `json:"name" biding:"required"`
+		Grade int16  `json:"grade" biding:"required"`
 	}
-
-	// publish list student to kafka
 
 	if c.Bind(&student) == nil {
 		entity := models.Student{
-			UserId: student.UserId,
-			Grade:  student.Grade,
+			Name:  student.Name,
+			Grade: student.Grade,
 		}
 
 		err := s.studentRepo.Update(context.Background(), c.Param("id"), &entity)
@@ -87,11 +83,11 @@ func (s *student) Put(c *gin.Context) {
 	}
 }
 
+// order message by message key. hash key partition.
 func produceMessagesCreate(producer sarama.SyncProducer, student models.Student) {
-
 	s := kafka_pb.Student{
-		UserId: student.UserId,
-		Grade:  int32(student.Grade),
+		Name:  student.Name,
+		Grade: int32(student.Grade),
 	}
 
 	m, err := proto.Marshal(&s)
@@ -118,11 +114,11 @@ func produceMessagesCreate(producer sarama.SyncProducer, student models.Student)
 
 }
 
+// order message by custom partitioner.
 func produceMessagesUpdate(producer sarama.SyncProducer, student models.Student) {
-
 	s := kafka_pb.Student{
-		UserId: student.UserId,
-		Grade:  int32(student.Grade),
+		Name:  student.Name,
+		Grade: int32(student.Grade),
 	}
 
 	m, err := proto.Marshal(&s)

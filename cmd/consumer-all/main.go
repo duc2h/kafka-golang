@@ -116,7 +116,7 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 				continue
 			}
 
-			log.Printf("Message claimed: user_id = %s, grade = %d, timestamp = %v, topic = %s, partition = %d, key = %s", student.UserId, student.Grade, message.Timestamp, message.Topic, message.Partition, message.Key)
+			log.Printf("Message claimed: user_id = %s, grade = %d, timestamp = %v, topic = %s, partition = %d, key = %s", student.Name, student.Grade, message.Timestamp, message.Topic, message.Partition, message.Key)
 			session.MarkMessage(message, "")
 
 		// Should return when `session.Context()` is done.

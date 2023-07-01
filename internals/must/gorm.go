@@ -47,8 +47,8 @@ func ConnectPostgresql(cfg *configs.PostgreSQL) *gorm.DB {
 
 func MigrateDB(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&models.User{},
 		&models.Student{},
-		&models.Parent{},
+		&models.Class{},
+		&models.ClassStudent{},
 	)
 }

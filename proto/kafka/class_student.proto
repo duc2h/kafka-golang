@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package kafka.v1;
+
+option go_package = "/kafka;pb";
+
+message ClassStudent {
+    string class_id = 1;
+    string student_id = 2;
+}
