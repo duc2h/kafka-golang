@@ -22,6 +22,7 @@ Something I can do:
         *  [How to add partitions on the runtime](#how-to-add-partitions-on-the-runtime)
     * :x: Offset, replay message when kafka down.
     * :x: Order message.
+        * Kafka only guarantee message ordering when we have pushed message to kafka already (consumer part). How about order message in producer part? [The instruction](https://aiven.io/blog/kafka-real-ordering)
         * [The scenario](#order-message-scenario).
     * :x: CDC with postgresql
     * :x: Implement out-box pattern.
