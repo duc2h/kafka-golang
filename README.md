@@ -91,6 +91,6 @@ Something I can do:
 ### Order message scenario
     * A class has 10 seats maximum, so students need to register for their favorite class asap. 
     * In peak time, many students register at the same time, so we need to order the register. If the register exceeds 10 -> we will reject all the rest.
-    * EG: The total of register in class Mathematics is 8.
+    * EG: Currently, the total of register in class Mathematics is 8.
         * Student A, B, C send register to our application.
         * The order of register is C, A, B. -> we will send them to a partition in kafka -> B will be rejected due to the total register exceeding 10.

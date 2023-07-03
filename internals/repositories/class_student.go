@@ -29,7 +29,7 @@ func (r *classStudentRepo) Create(ctx context.Context, entity *models.ClassStude
 
 func (r *classStudentRepo) Count(ctx context.Context, classId string) (int64, error) {
 	var count int64
-	query := r.db.WithContext(ctx).Where("class_id = ?", classId).Count(&count)
+	query := r.db.WithContext(ctx).Model(&models.ClassStudent{}).Where("class_id = ?", classId).Count(&count)
 
 	return count, query.Error
 }

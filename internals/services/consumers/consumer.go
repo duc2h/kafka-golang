@@ -86,6 +86,7 @@ func (c *ConsumerGroup) ConsumeClaim(session sarama.ConsumerGroupSession, claim 
 
 			if err != nil {
 				// add logic to control error.
+				log.Printf("onHandler message error: %s", err.Error())
 				continue
 			}
 

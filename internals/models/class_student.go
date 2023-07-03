@@ -2,8 +2,9 @@ package models
 
 // the relationship between student and class table. many-many
 type ClassStudent struct {
-	ClassID   string `gorm:"class_id;not null;primaryKey"`
-	StudentID string `gorm:"class_id;not null;primaryKey"`
+	ID        string `gorm:"id;not null;primaryKey"`
+	ClassID   string `gorm:"class_id;not null"`
+	StudentID string `gorm:"class_id;not null"`
 }
 
 func (*ClassStudent) TableName() string {

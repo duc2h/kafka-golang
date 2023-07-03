@@ -7,12 +7,13 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/edarha/kafka-golang/internals/configs"
+	"github.com/edarha/kafka-golang/internals/must"
+	"github.com/edarha/kafka-golang/internals/repositories"
 	"github.com/edarha/kafka-golang/internals/services/consumers"
 
 	"github.com/Shopify/sarama"
 )
-
-// Todo. implement consume logic.
 
 // Sarama configuration options
 var (
@@ -26,7 +27,28 @@ func main() {
 	config := sarama.NewConfig()
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 	ctx, cancel := context.WithCancel(context.Background())
-	classStudentConsumer := consumers.NewClassStudentConsumer()
+
+	// init db
+	cfg := configs.PostgreSQL{
+		Host:     "localhost",
+		Port:     "5432",
+		Database: "postgres",
+		Username: "postgres",
+		Password: "admin",
+	}
+
+	db := must.ConnectPostgresql(&cfg)
+
+	// migrate database
+	if err := must.MigrateDB(db); err != nil {
+		log.Fatal("something wrong while migrating database. err: %w", err)
+	}
+
+	// init repo
+	classStudentRepo := repositories.NewClassStudentRepo(db)
+
+	// init consumer
+	classStudentConsumer := consumers.NewClassStudentConsumer(classStudentRepo)
 
 	reader := consumers.NewReader(config, brokers, group, topics, classStudentConsumer.Handler)
 
