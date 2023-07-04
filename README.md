@@ -25,6 +25,9 @@ Something I can do:
         * Kafka only guarantee message ordering when we have pushed message to kafka already (consumer part). How about order message in producer part? [The instruction](https://aiven.io/blog/kafka-real-ordering)
         * [The scenario](#order-message-scenario).
     * :x: CDC with postgresql
+        * Database to kafka
+        
+        * Kafka to database
     * :x: Implement out-box pattern.
     * :x: Implement saga pattern.
     * ...
