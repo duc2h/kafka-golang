@@ -109,6 +109,9 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 		select {
 		case message := <-claim.Messages():
 
+			///// Add sleep to test message lag in kafka.
+			// time.Sleep(time.Second * 15)
+
 			student := kafka_pb.Student{}
 			err := proto.Unmarshal(message.Value, &student)
 			if err != nil {
