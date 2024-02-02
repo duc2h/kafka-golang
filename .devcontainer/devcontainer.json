@@ -1,0 +1,21 @@
+{
+	"name": "Temporal Go Samples",
+	"image": "mcr.microsoft.com/vscode/devcontainers/go:0-1-bullseye",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"go.toolsManagement.checkForUpdates": "local",
+				"go.useLanguageServer": true,
+				"go.gopath": "/go"
+			},
+			"extensions": [
+				"golang.Go",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {}
+	},
+	"remoteUser": "vscode"
+}

@@ -102,3 +102,7 @@ TODO.
         * The order of register is C, A, B. -> we will send them to a partition in kafka -> B will be rejected due to the total register exceeding 10.
 
         * Test the mode of at least once, at most once.
+
+### Integrate kafka with temporal.
+    * Demostrate temporal works.
+    * A student can register 3 class maximum. If they register more than 3, the `temporal workflow` will be called to remove the lasted registration then insert the new one (FIFO).

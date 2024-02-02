@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"github.com/edarha/kafka-golang/internals/models"
 	"gorm.io/gorm"
@@ -9,8 +10,11 @@ import (
 
 type ClassStudent interface {
 	Create(ctx context.Context, entity *models.ClassStudent) error
+	DeleteByID(ctx context.Context, ID string) error
 
-	Count(ctx context.Context, classId string) (int64, error)
+	GetLastedByStudentId(ctx context.Context, studentId string) (*models.ClassStudent, error)
+	CountByClassId(ctx context.Context, classId string) (int64, error)
+	CountByStudentId(ctx context.Context, studentId string) (int64, error)
 }
 
 type classStudentRepo struct {
@@ -24,12 +28,38 @@ func NewClassStudentRepo(db *gorm.DB) ClassStudent {
 }
 
 func (r *classStudentRepo) Create(ctx context.Context, entity *models.ClassStudent) error {
+	entity.CreatedAt = time.Now()
 	return r.db.WithContext(ctx).Model(&models.ClassStudent{}).Create(entity).Error
 }
 
-func (r *classStudentRepo) Count(ctx context.Context, classId string) (int64, error) {
+func (r *classStudentRepo) CountByClassId(ctx context.Context, classId string) (int64, error) {
 	var count int64
 	query := r.db.WithContext(ctx).Model(&models.ClassStudent{}).Where("class_id = ?", classId).Count(&count)
 
 	return count, query.Error
+}
+
+func (r *classStudentRepo) CountByStudentId(ctx context.Context, studentId string) (int64, error) {
+	var count int64
+	query := r.db.WithContext(ctx).Model(&models.ClassStudent{}).Where("student_id = ?", studentId).Count(&count)
+
+	return count, query.Error
+}
+
+func (r *classStudentRepo) GetLastedByStudentId(ctx context.Context, studentId string) (*models.ClassStudent, error) {
+	var result models.ClassStudent
+	err := r.db.WithContext(ctx).Model(&models.ClassStudent{}).
+		Where("student_id = ?", studentId).
+		Order("created_at").
+		Limit(1).Select(&result).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (r *classStudentRepo) DeleteByID(ctx context.Context, ID string) error {
+	return r.db.WithContext(ctx).Delete(&models.ClassStudent{ID: ID}).Error
 }

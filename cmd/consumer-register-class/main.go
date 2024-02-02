@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -10,7 +11,11 @@ import (
 	"github.com/edarha/kafka-golang/internals/configs"
 	"github.com/edarha/kafka-golang/internals/must"
 	"github.com/edarha/kafka-golang/internals/repositories"
+	"github.com/edarha/kafka-golang/internals/services"
 	"github.com/edarha/kafka-golang/internals/services/consumers"
+	"github.com/edarha/kafka-golang/internals/utils"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 
 	"github.com/Shopify/sarama"
 )
@@ -47,8 +52,35 @@ func main() {
 	// init repo
 	classStudentRepo := repositories.NewClassStudentRepo(db)
 
+	// init activity
+	classStudentActivity := services.NewClassStudentActivity(classStudentRepo)
+
+	// init workflow
+	classStudentWorkflow := services.NewClassStudentWorkflow(classStudentActivity)
+
 	// init consumer
-	classStudentConsumer := consumers.NewClassStudentConsumer(classStudentRepo)
+	classStudentConsumer := consumers.NewClassStudentConsumer(classStudentRepo, classStudentWorkflow)
+
+	/// register the workflow & activity to temporal
+	c, err := client.Dial(client.Options{})
+	if err != nil {
+		log.Fatalln("unable to create Temporal client", err)
+	}
+	defer c.Close()
+	w := worker.New(c, utils.CLASS_STUDENT_REGISTER_QUEUE, worker.Options{})
+
+	w.RegisterWorkflow(classStudentWorkflow.RegisterStudentClass)
+	w.RegisterActivity(classStudentActivity.CheckClassSize)
+	w.RegisterActivity(classStudentActivity.RegisterStudentClass)
+	w.RegisterActivity(classStudentActivity.StudentClassSizeOver)
+
+	fmt.Println("======================= hello =======================")
+	go func() {
+		err = w.Run(worker.InterruptCh())
+		if err != nil {
+			log.Fatalln("unable to start Worker", err)
+		}
+	}()
 
 	reader := consumers.NewReader(config, brokers, group, topics, classStudentConsumer.Handler)
 
