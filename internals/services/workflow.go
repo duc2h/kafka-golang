@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"time"
 
 	"github.com/edarha/kafka-golang/internals/models"
@@ -21,10 +22,11 @@ func NewClassStudentWorkflow(activity *ClassStudentActivity) *ClassStudentWorkfl
 
 func (w *ClassStudentWorkflow) RegisterStudentClass(ctx workflow.Context, classStudent models.ClassStudent) error {
 	retryPolicy := &temporal.RetryPolicy{
-		InitialInterval:    time.Second,
-		BackoffCoefficient: 2.0,
-		MaximumInterval:    time.Minute,
-		MaximumAttempts:    3,
+		InitialInterval:        time.Second,
+		BackoffCoefficient:     2.0,
+		MaximumInterval:        time.Minute,
+		MaximumAttempts:        3,
+		NonRetryableErrorTypes: []string{utils.STUDENT_CLASS_SIZE_OVER.Error()},
 	}
 
 	options := workflow.ActivityOptions{
@@ -44,7 +46,7 @@ func (w *ClassStudentWorkflow) RegisterStudentClass(ctx workflow.Context, classS
 
 	err = workflow.ExecuteActivity(ctx, w.activity.RegisterStudentClass, classStudent).Get(ctx, nil)
 	if err != nil {
-		if err == utils.STUDENT_CLASS_SIZE_OVER {
+		if errors.Unwrap(err).Error() == utils.STUDENT_CLASS_SIZE_OVER.Error() {
 			err = workflow.ExecuteActivity(ctx, w.activity.StudentClassSizeOver, classStudent).Get(ctx, nil)
 			if err != nil {
 				return err

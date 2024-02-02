@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/edarha/kafka-golang/internals/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +29,7 @@ func NewClassStudentRepo(db *gorm.DB) ClassStudent {
 }
 
 func (r *classStudentRepo) Create(ctx context.Context, entity *models.ClassStudent) error {
+	entity.ID = uuid.NewString()
 	entity.CreatedAt = time.Now()
 	return r.db.WithContext(ctx).Model(&models.ClassStudent{}).Create(entity).Error
 }
@@ -51,7 +53,7 @@ func (r *classStudentRepo) GetLastedByStudentId(ctx context.Context, studentId s
 	err := r.db.WithContext(ctx).Model(&models.ClassStudent{}).
 		Where("student_id = ?", studentId).
 		Order("created_at").
-		Limit(1).Select(&result).Error
+		First(&result).Error
 
 	if err != nil {
 		return nil, err
@@ -61,5 +63,5 @@ func (r *classStudentRepo) GetLastedByStudentId(ctx context.Context, studentId s
 }
 
 func (r *classStudentRepo) DeleteByID(ctx context.Context, ID string) error {
-	return r.db.WithContext(ctx).Delete(&models.ClassStudent{ID: ID}).Error
+	return r.db.WithContext(ctx).Where("id = ?", ID).Delete(&models.ClassStudent{}).Error
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -69,12 +68,12 @@ func main() {
 	defer c.Close()
 	w := worker.New(c, utils.CLASS_STUDENT_REGISTER_QUEUE, worker.Options{})
 
+	// we can register with option
 	w.RegisterWorkflow(classStudentWorkflow.RegisterStudentClass)
 	w.RegisterActivity(classStudentActivity.CheckClassSize)
 	w.RegisterActivity(classStudentActivity.RegisterStudentClass)
 	w.RegisterActivity(classStudentActivity.StudentClassSizeOver)
 
-	fmt.Println("======================= hello =======================")
 	go func() {
 		err = w.Run(worker.InterruptCh())
 		if err != nil {
