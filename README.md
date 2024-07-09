@@ -14,7 +14,7 @@ Something I can do:
 * :heavy_check_mark: Deploy kafka cluster (3 nodes)
     * Be careful with `host:port` in kafka cluster, read this [instruction](https://www.confluent.io/en-gb/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/#adding-new-listener)
 
-* :heavy_check_mark: Kafka consumer lag.
+* :heavy_check_mark: Kafka consumer lag: https://medium.com/walmartglobaltech/reliably-processing-trillions-of-kafka-messages-per-day-23494f553ef9
 * :x: Streaming data analytics.
 
 * Some test:
