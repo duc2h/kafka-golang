@@ -15,6 +15,7 @@ Something I can do:
     * Be careful with `host:port` in kafka cluster, read this [instruction](https://www.confluent.io/en-gb/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/#adding-new-listener)
 
 * :heavy_check_mark: Kafka consumer lag.
+* :x: Streaming data analytics.
 
 * Some test:
     * :x: kafka TTL
